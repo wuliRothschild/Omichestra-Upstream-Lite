@@ -22,3 +22,22 @@ jobs:
           else
             echo "Rscript not installed on runner; skipping"
           fi
+  hygiene:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: leak scan (machine paths / credentials)
+        run: |
+          if git grep -nIE 'C:/Users/|/home/[a-z]|K:/|sk-[A-Za-z0-9]{16,}|ghp_|github_pat_' -- . ':!.git' ':!.github' ':!CONTRIBUTING.md'; then
+            echo "::error::疑似机器路径或凭据残留"; exit 1
+          fi
+      - name: crlf scan
+        run: |
+          if git grep -lI $'\r' -- . ':!.git' ':!.github' ':!CONTRIBUTING.md'; then
+            echo "::error::发现 CRLF 行尾"; exit 1
+          fi
+      - name: bom scan
+        run: |
+          if grep -rlI $'^\xEF\xBB\xBF' --exclude-dir=.git . ; then
+            echo "::error::发现 UTF-8 BOM"; exit 1
+          fi

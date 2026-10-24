@@ -40,11 +40,11 @@ python "$SCRIPT_DIR/05_prepare_genes_list.py" --species "$SPECIES" \
   --out-dir "$NF_SCAUTOQC_DIR/genes_list"
 
 # ---- 读样本表 ----
-mapfile -t SIDS < <(awk -F, 'NR>1 && $1!~/^#/ && NF>=2 {print $1}' "$SAMPLE_SHEET")
+mapfile -t SIDS < <(sed '1s/^﻿//' "$SAMPLE_SHEET" | tr -d '\r' | awk -F, 'NR>1 && $1!~/^#/ && NF>=2 {print $1}')
 
 # 数据集一致性硬校验：一次运行=一个数据集（tissue×tech×chemistry 唯一组合）；
 # tissue/chemistry 为运行级单值，此处校验样本表 cell_or_nuclei（sc/sn）全一致——混批即拒跑
-mapfile -t CONS < <(awk -F, 'NR>1 && $1!~/^#/ && NF>=2 {v=$5; gsub(/[\r ]/,"",v); print (v==""?"cell":v)}' "$SAMPLE_SHEET")
+mapfile -t CONS < <(sed '1s/^﻿//' "$SAMPLE_SHEET" | tr -d '\r' | awk -F, 'NR>1 && $1!~/^#/ && NF>=2 {v=$5; gsub(/[ ]/,"",v); print (v==""?"cell":v)}')
 [ "${#CONS[@]}" -eq "${#SIDS[@]}" ] || { echo "[err] 样本表 cell_or_nuclei 列与样本数不符: $SAMPLE_SHEET"; exit 1; }
 UNIQ_CON=$(printf '%s\n' "${CONS[@]}" | sort -u | paste -sd,)
 [ "$(printf '%s\n' "${CONS[@]}" | sort -u | wc -l)" -eq 1 ] \
@@ -81,7 +81,7 @@ for SID in "${SIDS[@]}"; do
   done
 
   # cell_or_nuclei（gather 消费，也是指纹参数之一）
-  CON=$(awk -F, -v s="$SID" 'NR>1 && $1==s {gsub(/[\r ]/,"",$5); print $5}' "$SAMPLE_SHEET")
+  CON=$(sed '1s/^﻿//' "$SAMPLE_SHEET" | tr -d '\r' | awk -F, -v s="$SID" 'NR>1 && $1==s {gsub(/[ ]/,"",$5); print $5}')
   CON="${CON:-cell}"
 
   # 幂等（指纹判据）：输入指纹逐项一致 + 六件产物齐备才 skip

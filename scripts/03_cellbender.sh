@@ -17,7 +17,7 @@ source "$CONDA_SH"; conda activate "$ENV_CELLBENDER"
 
 OUT_ROOT="$OUTPUT_ROOT/$PROJECT_NAME"
 # 读样本表（跳过注释与空行），取 sample_id 列
-mapfile -t SIDS < <(awk -F, 'NR>1 && $1!~/^#/ && NF>=2 {print $1}' "$SAMPLE_SHEET")
+mapfile -t SIDS < <(sed '1s/^﻿//' "$SAMPLE_SHEET" | tr -d '\r' | awk -F, 'NR>1 && $1!~/^#/ && NF>=2 {print $1}')
 
 # cellbender 前置步骤一：format——确保 raw/filtered mtx 目录与 h5 四件齐全
 # （MobiVision 分支在此复制标准命名 mtx 目录并构建 h5；cellbender 输入

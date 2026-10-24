@@ -34,7 +34,7 @@ CR_ROOT="$OUTPUT_ROOT/$PROJECT_NAME"
 DS="${DATASET_NAME:-$PROJECT_NAME}"
 SC_DIR="${SC_ROOT:-$CR_ROOT/scautoqc}"
 [ -n "${SCANPY_PYTHON:-}" ] || { echo "[config 错误] SCANPY_PYTHON 未填（交付校验需用指定 python 实例解析 metadata.json，禁止 PATH 抽签）" >&2; exit 1; }
-mapfile -t SIDS < <(awk -F, 'NR>1 && $1!~/^#/ && NF>=2 {print $1}' "$SAMPLE_SHEET")
+mapfile -t SIDS < <(sed '1s/^﻿//' "$SAMPLE_SHEET" | tr -d '\r' | awk -F, 'NR>1 && $1!~/^#/ && NF>=2 {print $1}')
 [ "${#SIDS[@]}" -gt 0 ] || { echo "[err] 样本表为空: $SAMPLE_SHEET"; exit 1; }
 
 ERRS=()

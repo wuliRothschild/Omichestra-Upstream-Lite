@@ -142,6 +142,7 @@ bash scripts/09c_cleanup.sh --deliver-cr <交付根> [--deliver-sc <根>] [--app
 | [handoff-contract.md](references/handoff-contract.md) | HANDOFF 段落字段契约 |
 | [delivery-verification.md](references/delivery-verification.md) | 交付对象只读核验：obs 契约、压缩重建、断言 |
 | [troubleshooting.md](references/troubleshooting.md) | 常见故障与排错 |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | 仓库约定：零项目残留、编码/换行、跨平台、数据流原则、提交前检查 |
 
 ## 给执行者的提醒
 

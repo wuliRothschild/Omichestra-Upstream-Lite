@@ -34,12 +34,12 @@ SID="$1"; SAMPLEDIR="$2"; ZBAMDIR="$3"
 if [ -z "${VELO_PER_SAMPLE_HANDOFF:-}" ]; then
   echo "==== [$(date '+%F %T')] 阶段边界闸：核验样本表全部样本 quantify 完成 ===="
   [ -f "$SAMPLE_SHEET" ] || { echo "[err] SAMPLE_SHEET 不存在，无法核验阶段边界: $SAMPLE_SHEET"; exit 1; }
-  mapfile -t ALL_SIDS < <(awk -F, 'NR>1 && $1!~/^#/ && NF>=2 {print $1}' "$SAMPLE_SHEET")
+  mapfile -t ALL_SIDS < <(sed '1s/^﻿//' "$SAMPLE_SHEET" | tr -d '\r' | awk -F, 'NR>1 && $1!~/^#/ && NF>=2 {print $1}')
   [ "${#ALL_SIDS[@]}" -gt 0 ] || { echo "[err] 样本表无有效样本行，无法核验阶段边界"; exit 1; }
   # col4（bam_archive_dir）提列用 awk：read（无论 -a 还是逐变量）在 IFS=, 下丢/并不空字段，
   # 无法保证第 4 列定位。awk -F, 的 $4 与 NF>=2 样本集同行同序（同一文件、同过滤条件）。
   declare -A ARC_COL=()
-  mapfile -t _arc_lines < <(awk -F, 'NR>1 && $1!~/^#/ && NF>=2 {print $4}' "$SAMPLE_SHEET")
+  mapfile -t _arc_lines < <(sed '1s/^﻿//' "$SAMPLE_SHEET" | tr -d '\r' | awk -F, 'NR>1 && $1!~/^#/ && NF>=2 {print $4}')
   for i in "${!ALL_SIDS[@]}"; do
     ARC_COL["${ALL_SIDS[$i]}"]="${_arc_lines[$i]:-}"
   done
