@@ -1,0 +1,12 @@
+# 运行时缓存
+__pycache__/
+*.pyc
+.Rhistory
+.RData
+
+# 工作配置——由用户从模板复制生成，含机器路径，绝不入库
+scripts/run_config.sh
+
+# OS 杂物
+.DS_Store
+Thumbs.db

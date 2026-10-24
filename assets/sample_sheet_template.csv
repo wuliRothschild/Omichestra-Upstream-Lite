@@ -1,0 +1,11 @@
+sample_id,fastq_source_dir,fastq_prefix,bam_archive_dir,cell_or_nuclei
+# 每行一个样本。列含义：
+#   sample_id         cellranger --id/--sample 与全程标识，仅允许 [A-Za-z0-9_-]（数字/字母/连字符/下划线，无首字符限制）
+#   fastq_source_dir  该样本 fastq 所在目录（含 <prefix>_S1_L001_R{1,2}_001.fastq.gz 与 .md5）
+#   fastq_prefix      fastq 文件名前缀（<prefix>_S1_L001_R1_001.fastq.gz 的 <prefix> 部分）
+#   bam_archive_dir   cellranger BAM 归档目录（通常 = fastq_source_dir；留空则不归档 BAM）
+#   cell_or_nuclei    cell | nuclei（scautoqc 据此切换 GMM 阈值）
+#
+# 示例：
+# sample1,/path/to/fastq/sample1,S1,/path/to/fastq/sample1,cell
+# sample2,/path/to/fastq/sample2,S2,/path/to/fastq/sample2,nuclei

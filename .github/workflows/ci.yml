@@ -1,0 +1,24 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: bash syntax
+        run: for f in scripts/*.sh; do bash -n "$f"; done
+      - name: python syntax
+        run: python -m compileall -q scripts
+  r-syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: R parse (if available)
+        run: |
+          if command -v Rscript >/dev/null 2>&1; then
+            Rscript -e 'invisible(parse("scripts/08_scdblfinder.R"))' && echo "R parse ok"
+          else
+            echo "Rscript not installed on runner; skipping"
+          fi
